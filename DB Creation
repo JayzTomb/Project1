@@ -1,0 +1,95 @@
+
+CREATE TABLE IT.DEPARTMENT(
+	dept_no integer PRIMARY KEY,
+	dept_name text,
+	dept_location text
+
+);
+
+CREATE TABLE IT.EMPLOYEE(
+	emp_no serial PRIMARY KEY,
+	fname text,
+	join_date date,
+	lname text, 
+	NIC varchar(10),
+	age integer,	
+	sex char(1),
+	designation text,
+	add1 text,
+	add2 text,
+	add3 text,
+	image text,
+	dept_no integer REFERENCES IT.DEPARTMENT(dept_no),
+	report_id integer REFERENCES IT.EMPLOYEE(emp_no)
+	
+);
+
+CREATE TABLE IT.PROJECTS(
+	proj_no integer PRIMARY KEY,
+	Proj_name text,
+	location text,
+	dept_no integer REFERENCES IT.DEPARTMENT(dept_no)
+
+);
+
+CREATE TABLE IT.DEPENDENT(
+	depend_no integer,
+	depend_name text,
+	sex char(1),
+	DOB date,
+	relationship text,
+	dependancy text,
+	emp_no integer REFERENCES IT.EMPLOYEE(emp_no),
+	PRIMARY KEY(emp_no, depend_no)
+);
+
+CREATE TABLE IT.WORKS_ON(
+	emp_no integer REFERENCES IT.EMPLOYEE(emp_no),
+	proj_no integer REFERENCES IT.PROJECTS(proj_no),
+	duration time,
+	start_date date,
+	PRIMARY KEY(emp_no, proj_no)
+);
+
+CREATE TABLE IT.EMP_CONTACTS(
+	emp_no integer REFERENCES IT.EMPLOYEE(emp_no),
+	mobile integer,
+	office integer,
+	email text,
+	viber integer,
+	skype text,
+	facebook text,
+	twitter text,
+	Google_plus text,
+	PRIMARY KEY(emp_no)
+);
+
+CREATE TABLE IT.EMP_EXPERIENCE(
+	emp_no integer REFERENCES IT.EMPLOYEE(emp_no),
+	work_ex text,
+	com_name text,
+	No_of_yrs integer,
+	PRIMARY KEY(emp_no)
+);
+
+CREATE TABLE IT.EMP_SALARY(
+	emp_no integer REFERENCES IT.EMPLOYEE(emp_no),
+	EPF_no integer,
+	ETF_no integer,
+	basic_sal real,
+	allowances real,
+	deductions real,
+	increments real,
+	PRIMARY KEY(emp_no)
+);
+
+CREATE OR REPLACE FUNCTION it.insertemployeecontactdetails(_emp_no integer, _fname text, _lname text, _join_date date, _nic character varying(10), _age integer, _sex character(1), _designation text, _add1 text, _add2 text, _add3 text, _image text, _dept_no integer, _report_id integer)
+  RETURNS void AS
+$BODY$
+      BEGIN
+        INSERT INTO it.employee(emp_no, fname, lname, join_date, nic, age, sex, designation, add1, add2, add3, image, dept_no, report_id)
+        VALUES(_emp_no, _fname, _lname, _join_date, _nic, _age, _sex, _designation, _add1, _add2, _add3, _image, _dept_no, _report_id);
+      END;
+  $BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
